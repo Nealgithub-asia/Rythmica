@@ -5,8 +5,8 @@ np.set_printoptions(precision=2, suppress=True)
 path = "./music/tunetank-vlog-beat-background-349853.mp3"
 y,sr=librosa.load(path)
 
-beat_track=librosa.onset.onset_detect(y=y,sr=sr)
-beatSamples=librosa.frames_to_samples(beat_track)
+beatTrack=librosa.onset.onset_detect(y=y,sr=sr)
+beatSamples=librosa.frames_to_samples(beatTrack)
 beatTime=beatSamples/sr
 
 totalBeats=len(beatTime)
