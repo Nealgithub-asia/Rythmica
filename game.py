@@ -1,5 +1,7 @@
 import librosa
 import numpy as np
+import copy
+
 np.set_printoptions(precision=2, suppress=True)
 
 path = "./music/tunetank-vlog-beat-background-349853.mp3"
@@ -17,14 +19,13 @@ direction=["Top","Bottom","Left","Right"]
 randirectionIndex=[]
 for i in range(totalBeats):
     num= np.random.randint(1,4)
-    randomize=np.random.randint(0,4,size=(num)).tolist()                           
+    randomize=np.random.choice(4,size=(num), replace = False).tolist()                           
     randirectionIndex.append(randomize)
 
-randirection=[]
-randirection.extend(randirectionIndex)
+randirection=copy.deepcopy(randirectionIndex)
 for i in range(len(randirectionIndex)):
     for j in range(len(randirectionIndex[i])):
-        match j:
+        match randirectionIndex[i][j]:
             case 0:
                 randirection[i][j]=direction[0]
             case 1:
@@ -33,10 +34,14 @@ for i in range(len(randirectionIndex)):
                 randirection[i][j]=direction[2]
             case 3:
                 randirection[i][j]=direction[3]
+
+
 beatDirection=beatTime.tolist()
 #print(beatDirection)
 for i in range(totalBeats):
-    
     beatDirection[i]=[beatDirection[i], randirection[i]]
 
-print(beatDirection[:5])
+print(randirectionIndex[:3])
+print(randirection[:3])
+print(beatDirection[:3])
+
