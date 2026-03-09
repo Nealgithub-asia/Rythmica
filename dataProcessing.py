@@ -1,5 +1,7 @@
 import librosa
 import numpy as np
+import matplotlib.pyplot as plt
+
 def bake_audio():
     path = "./music/tunetank-vlog-beat-background-349853.mp3"
     example = librosa.example("nutcracker")
@@ -22,6 +24,12 @@ def bake_audio():
     max= np.max(np.abs(bY))
     min= np.min(np.abs(bY))
 
+    
+    plt.figure(figsize=(10, 4))
+    librosa.display.waveshow(y, sr=sr)
+    plt.title('Waveform')
+    plt.show()
+
     processedData={
         "y":y,
         "sr":sr,
@@ -35,6 +43,7 @@ def bake_audio():
         "min":min,
         "max":max
     }
+    
 
     np.save("processedData.npy", processedData)
     print("baking complete! processedData.npy created.")

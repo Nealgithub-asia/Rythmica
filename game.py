@@ -32,26 +32,15 @@ for i in range(totalBeats):
     randomize=np.random.choice(4,size=(num), replace = False).tolist()                           
     randirectionIndex.append(randomize)
 
-"""
-randirection=copy.deepcopy(randirectionIndex)
-for i in range(len(randirectionIndex)):
-    for j in range(len(randirectionIndex[i])):
-        match randirectionIndex[i][j]:
-            case 0:
-                randirection[i][j]=direction[0]
-            case 1:
-                randirection[i][j]=direction[1]
-            case 2:
-                randirection[i][j]=direction[2]
-            case 3:
-                randirection[i][j]=direction[3]
-"""
 randirection = [[direction[idx] for idx in sub_idx]for sub_idx in randirectionIndex]
 
 beatDirection=[]
 for i in range(totalBeats):
     beatDirection.append([beatTime[i].tolist(), randirection[i]])
 
-print(beatTime[:5]," Beat times")
-print(bY[:5]," Amplitudes of beats on times")
-print([[f"{item[0]:.2f}", item[1]] for item in beatDirection[:5]])
+#print(RMS)
+#print(beatTime[:20]," Beat times")
+#print(bY[:5]," Amplitudes of beats on times")
+#print([[f"{item[0]:.2f}", item[1]] for item in beatDirection[:5]])
+print(randirectionIndex[:5])
+print(randirection[:5])
