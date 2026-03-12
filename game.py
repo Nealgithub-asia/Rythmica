@@ -39,7 +39,7 @@ for i in range(totalBeats):
     beatDirection.append([beatTime[i].tolist(), randirection[i]])
 
 #print(RMS)
-#print(beatTime[:20]," Beat times")
+print(beatTime[:20]," Beat times")
 #print(bY[:5]," Amplitudes of beats on times")
 #print([[f"{item[0]:.2f}", item[1]] for item in beatDirection[:5]])
 print(randirectionIndex[:5])

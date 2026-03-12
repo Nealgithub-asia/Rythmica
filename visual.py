@@ -1,16 +1,23 @@
 import pygame
-from game import randirection
+from game import randirection, beatTime
 
-def resize(name, width, height):
-    return pygame.transform.scale(name, (width, height))    
+def resize(image, width, height):
+    return pygame.transform.scale(image, (width, height))    
 
-def player(): #render
-    screen.blit(playerLoad, ( (x-playerWidth)/2, (y-playerHeight)/2) )
+def draw_player():
+    screen.blit(playerLoad, ( (screenWidth-playerWidth)//2, (screenHeight-playerHeight)//2) )
+
+def draw_ring():
+    ring=pygame.draw.circle(screen, "white" , screenMiddle, ringRadius, ringWidth)
+    #    pygame.draw.circle(surface, color  , center      , radius    , width)
 
 pygame.init()
 
-x,y=1920,1080
-screen = pygame.display.set_mode((x,y))
+
+screenWidth, screenHeight=1920,1080
+screenMiddle=[screenWidth//2, screenHeight//2] 
+screen = pygame.display.set_mode((screenWidth, screenHeight))
+clock=pygame.time.Clock()
 
 caption= pygame.display.set_caption("Rythmica")
 
@@ -19,25 +26,34 @@ icon = pygame.display.set_icon(iconLoad)
 
 playerLoad = pygame.image.load("./assets/entities/player.png") 
 playerWidth, playerHeight=100,100
-resize(playerLoad,playerWidth,playerHeight)
+playerLoad= resize(playerLoad,playerWidth,playerHeight)
 
-objectLoad=  pygame.image.load("./assets/entities/player.png")
+objectLoad= pygame.image.load("./assets/entities/player.png")
 objectWidth, objectHeight=100,100
-resize(objectLoad,30,30)
+objectLoad= resize(objectLoad,objectWidth,objectHeight)
+
+ringRadius=200
+ringWidth=30
+rectLeft= pygame.Rect((screenMiddle[0] - ringRadius), screenMiddle[1], ringWidth, ringWidth)
+rectRight= pygame.Rect((screenMiddle[0] + ringRadius),screenMiddle[1], ringWidth, ringWidth)
+rectTop= pygame.Rect(screenMiddle[0],(screenMiddle[1]-ringRadius), ringWidth, ringWidth)
+rectBottom= pygame.Rect(screenMiddle[0],(screenMiddle[1]+ringRadius), ringWidth, ringWidth)
+
+
+speed=5
 
 #game loop
 running=True
 while running:
     for event in pygame.event.get():
 
-        #game quit
         if event.type == pygame.QUIT:
             running=False
         
-        #key counter
+        #key presses
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                
+
                 pass
             if event.key == pygame.K_RIGHT:
                 
@@ -51,7 +67,9 @@ while running:
 
 
     screen.fill((0,0,0))
-
-    player()
-    
+    draw_player()
+    draw_ring()
     pygame.display.update()
+    clock.tick(60)
+
+pygame.quit()
