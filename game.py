@@ -45,7 +45,5 @@ print(beatTime[:20]," Beat times")
 print(randirectionIndex[:5])
 print(randirection[:5])
 
-balls={
-    "randirection":randirection
-}
+print(sr)
 

@@ -22,7 +22,7 @@ def bake_audio():
     mean= bY[int(len(bY)/2)]
     median=np.median(np.sort(bY))
     max= np.max(np.abs(bY))
-    min= np.min(np.abs(bY))
+    min= np.min((bY))
 
     
     plt.figure(figsize=(10, 4))
@@ -30,6 +30,7 @@ def bake_audio():
     plt.title('Waveform')
     plt.show()
 
+    print("min", min)
     processedData={
         "y":y,
         "sr":sr,
