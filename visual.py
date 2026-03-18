@@ -1,5 +1,5 @@
 import pygame
-from game import beatDirection,beatTime
+from game import beatDirection,beatTime,randirection
 
 class game_player:
     def __init__(self ,path , width, height, hWidth, hHeight):
@@ -62,22 +62,22 @@ class game_object:
         self.bottomHitbox = pygame.Rect(center_x_start, screenHeight - self.hHeight, self.hWidth, self.hHeight)
 
     def update(self, direction):
-        if(self.direction=="left"):
+        if(direction=="left"):
             if(self.leftHitbox.x < screenMiddlex):
                 self.leftHitbox.x+=5
-                screen.blit(object.image, (self.leftHitbox.x, self.leftHitbox.y))
-        elif(self.direction=="right"):
+                screen.blit(self.image, (self.leftHitbox.x, self.leftHitbox.y))
+        elif(direction=="right"):
             if(self.leftHitbox.x > screenMiddlex):
                 self.leftHitbox.x-=5
-                screen.blit(object.image, (self.leftHitbox.x, self.leftHitbox.y))
-        elif(self.direction=="top"):
+                screen.blit(self.image, (self.leftHitbox.x, self.leftHitbox.y))
+        elif(direction=="top"):
             if(self.leftHitbox.y < screenMiddley):
                 self.leftHitbox.y+=5
-                screen.blit(object.image, (self.leftHitbox.x, self.leftHitbox.y))
-        elif(self.direction=="bottom"):
+                screen.blit(self.image, (self.leftHitbox.x, self.leftHitbox.y))
+        elif(direction=="bottom"):
             if(self.leftHitbox.y > screenMiddley):
                 self.leftHitbox.y-=5
-                screen.blit(object.image, (self.leftHitbox.x, self.leftHitbox.y))
+                screen.blit(self.image, (self.leftHitbox.x, self.leftHitbox.y))
                 
 
 def load(asset):
@@ -137,7 +137,7 @@ clock = pygame.time.Clock()
 actionDuration=500 #mili seconds
 actionInitialize=0 #will get ticks till 1000
 
-timer={"Left":0,"Right":0,"Top":0,"Bottom":0}
+timer={"left":0,"right":0,"top":0,"bottom":0}
 #game loop
 activeobjects=[]
 i=0
@@ -150,12 +150,12 @@ while running:
     draw_ring("blue")
     
     if(i<len(beatTime) and currentTime >= beatTime[i]*1000):
-        for directionarr in beatDirection:
+        for directionarr in randirection:
             for direction in directionarr:
-                if direction=="left": activeobjects.append(object.leftHitbox,"left")
-                elif direction=="right": activeobjects.append(object.rightHitbox,"right")
-                elif direction=="top": activeobjects.append(object.topHitbox,"top")
-                elif direction=="bottom": activeobjects.append(object.bottomHitbox,"bottom")
+                if direction=="left": activeobjects.append((object.leftHitbox,"left"))
+                elif direction=="right": activeobjects.append((object.rightHitbox,"right"))
+                elif direction=="top": activeobjects.append((object.topHitbox,"top"))
+                elif direction=="bottom": activeobjects.append((object.bottomHitbox,"bottom"))
         i+=1
 
     for obj in activeobjects:

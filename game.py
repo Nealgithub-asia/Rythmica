@@ -21,7 +21,7 @@ max           =pD["max"]
 
 
 #randomizes the top,bottom,left and right
-direction=["Top","Bottom","Left","Right"]
+direction=["top","bottom","left","right"]
 randirectionIndex=[]
 for i in range(totalBeats):
     if(np.abs(bY[i])>RMS):
