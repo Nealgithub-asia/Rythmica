@@ -12,7 +12,6 @@ def bake_audio():
     beatTime=beatSamples/sr
     totalBeats=len(beatTime)
 
-
     bY=np.empty(totalBeats)
     for a,i in enumerate(beatSamples):
         bY[a]=np.abs(y[i])
@@ -22,7 +21,7 @@ def bake_audio():
     mean= bY[int(len(bY)/2)]
     median=np.median(np.sort(bY))
     max= np.max(np.abs(bY))
-    min= np.min((bY))
+    min= np.min(np.abs(bY))
 
     
     plt.figure(figsize=(10, 4))

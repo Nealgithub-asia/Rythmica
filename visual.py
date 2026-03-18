@@ -26,7 +26,7 @@ class game_player:
         self.hWidth=hWidth
         self.hHeight=hHeight
 
-        self.hitbox= pygame.Rect(screenMiddle[0]-self.hWidth//2, screenMiddle[1]-self.hHeight//2, self.width, self.height)
+        self.hitbox= pygame.Rect(screenMiddlex-self.hWidth//2, screenMiddley-self.hHeight//2, self.width, self.height)
 class game_object:
     def __init__(self ,path , width, height, hWidth, hHeight):
         self.path=path
@@ -51,8 +51,8 @@ class game_object:
         self.hWidth=hWidth
         self.hHeight=hHeight
         
-        center_x_start = screenMiddle[0] - (self.hWidth // 2)
-        center_y_start = screenMiddle[1] - (self.hHeight // 2)
+        center_x_start = screenMiddlex - (self.hWidth // 2)
+        center_y_start = screenMiddley - (self.hHeight // 2)
 
         self.leftHitbox = pygame.Rect(0, center_y_start, self.hWidth, self.hHeight)        
         self.rightHitbox = pygame.Rect(screenWidth - self.hWidth, center_y_start, self.hWidth, self.hHeight)
@@ -69,6 +69,16 @@ def draw_ring(color):
     ring=pygame.draw.circle(screen, color , screenMiddle, ringRadius, ringWidth)
     #    pygame.draw.circle(surface, color  , center      , radius    , width)
 
+def draw_ring_hitbox(side):
+    if(side=="left"):
+        pygame.draw.rect(screen, "red", rectLeft, 2)
+    elif(side=="right"):
+        pygame.draw.rect(screen, "red", rectRight, 2)
+    elif(side=="top"):
+        pygame.draw.rect(screen, "red", rectTop, 2) 
+    elif(side=="bottom"):
+        pygame.draw.rect(screen, "red", rectBottom, 2)
+
 def draw_player():
     screen.blit(player.image , ( (screenWidth-player.width)//2, (screenHeight-player.height)//2) )
 
@@ -76,7 +86,9 @@ pygame.init()
 
 
 screenWidth, screenHeight=1920,1080
-screenMiddle=[screenWidth//2, screenHeight//2] 
+screenMiddle=[screenWidth//2, screenHeight//2]
+screenMiddlex=screenWidth//2
+screenMiddley=screenHeight//2 
 screen = pygame.display.set_mode((screenWidth, screenHeight))
 clock=pygame.time.Clock()
 
@@ -91,37 +103,61 @@ player=game_player("./assets/entities/player.png", 100, 100, 100, 100 )
 object=game_object("./assets/entities/player.png", 30, 30, 30, 30)
 
 ringRadius=200
-ringWidth=30
+ringWidth=30 #ring width is the same as rectangle hitbox width
+
+rectLeft= pygame.Rect((screenMiddlex - ringRadius),( screenMiddley - ringWidth//2), ringWidth, ringWidth)
+rectRight= pygame.Rect((screenMiddlex + ringRadius - ringWidth),(screenMiddley - ringWidth//2), ringWidth, ringWidth)
+rectTop= pygame.Rect((screenMiddlex - ringWidth//2),(screenMiddley-ringRadius), ringWidth, ringWidth)
+rectBottom= pygame.Rect((screenMiddlex - ringWidth//2),(screenMiddley + ringRadius - ringWidth), ringWidth, ringWidth)
 
 speed=5
+
+clock = pygame.time.Clock()
+actionDuration=1000 #mili seconds
+actionInitialize=0 #will get ticks till 1000
 
 #game loop
 running=True
 while running:
+    screen.fill((0,0,0))
+    draw_player()
+    draw_ring("blue")
+
+
     for event in pygame.event.get():
 
         if event.type == pygame.QUIT:
             running=False
-        
         #key presses
+        currentTime=pygame.time.get_ticks()
+
         if event.type == pygame.KEYDOWN:
+
             if event.key == pygame.K_LEFT:
-                
-                pass
+                actionInitialize=pygame.time.get_ticks()    
+                if currentTime-actionInitialize<actionDuration:
+                    draw_ring_hitbox("left")
+
+
             if event.key == pygame.K_RIGHT:
-                
-                pass
+                actionInitialize=pygame.time.get_ticks()    
+                if currentTime-actionInitialize<actionDuration:
+                    draw_ring_hitbox("right")
+
             if event.key == pygame.K_UP:
-                
-                pass
+                actionInitialize=pygame.time.get_ticks()    
+                if currentTime-actionInitialize<actionDuration:
+                    draw_ring_hitbox("top")
+
             if event.key == pygame.K_DOWN:
+                actionInitialize=pygame.time.get_ticks()    
+                if currentTime-actionInitialize<actionDuration:
+                    draw_ring_hitbox("bottom")
                 
-                pass
+    if actionInitialize>1000:
+        actionInitialize=0
+    
 
-
-    screen.fill((0,0,0))
-    draw_player()
-    draw_ring("green")
     pygame.display.update()
     clock.tick(60)
 
