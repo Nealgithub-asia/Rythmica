@@ -154,25 +154,25 @@ while running:
     if(i<len(beatTime) and currentTime >= beatTime[i]*1000): 
         for direction in randirection[i]:
             newObj=game_object(objectImage, 30, 30, 30, 30)
-            if direction=="left": activeobjects.append((newObj.leftHitbox,"left"))
-            elif direction=="right": activeobjects.append((newObj.rightHitbox,"right"))
-            elif direction=="top": activeobjects.append((newObj.topHitbox,"top"))
-            elif direction=="bottom": activeobjects.append((newObj.bottomHitbox,"bottom"))
+            if direction=="left": activeobjects.append((newObj,"left"))
+            elif direction=="right": activeobjects.append((newObj,"right"))
+            elif direction=="top": activeobjects.append((newObj,"top"))
+            elif direction=="bottom": activeobjects.append((newObj,"bottom"))
         i+=1
     
     for obj in reversed(activeobjects):
         
         rect,dir=obj
         
-        newObj.update(direction=dir)        
+        rect.update(direction=dir)        
 
-        if dir=="left" and newObj.leftHitbox.x>=screenMiddlex:
+        if dir=="left" and rect.leftHitbox.x>=screenMiddlex:
             activeobjects.remove(obj)
-        elif dir=="right" and newObj.rightHitbox.x<=screenMiddlex:
+        elif dir=="right" and rect.rightHitbox.x<=screenMiddlex:
             activeobjects.remove(obj)
-        elif dir=="top" and newObj.topHitbox.y>=screenMiddley:
+        elif dir=="top" and rect.topHitbox.y>=screenMiddley:
             activeobjects.remove(obj)
-        elif dir=="bottom" and newObj.bottomHitbox.y<=screenMiddley:
+        elif dir=="bottom" and rect.bottomHitbox.y<=screenMiddley:
             activeobjects.remove(obj)
 
         
