@@ -41,7 +41,7 @@ for i in range(totalBeats):
 #print(RMS)
 #print(bY[:5]," Amplitudes of beats on times")
 #print([[f"{item[0]:.2f}", item[1]] for item in beatDirection[:5]])
-#print(beatTime[:20]," Beat times")
+print(beatTime[:20]," Beat times")
 #print(randirectionIndex[:5])
 #print(randirection[:5])
 

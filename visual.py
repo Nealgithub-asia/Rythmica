@@ -67,17 +67,17 @@ class game_object:
                 self.leftHitbox.x+=5
                 screen.blit(self.image, (self.leftHitbox.x, self.leftHitbox.y))
         elif(direction=="right"):
-            if(self.leftHitbox.x > screenMiddlex):
-                self.leftHitbox.x-=5
-                screen.blit(self.image, (self.leftHitbox.x, self.leftHitbox.y))
+            if(self.rightHitbox.x > screenMiddlex):
+                self.rightHitbox.x-=5
+                screen.blit(self.image, (self.rightHitbox.x, self.rightHitbox.y))
         elif(direction=="top"):
-            if(self.leftHitbox.y < screenMiddley):
-                self.leftHitbox.y+=5
-                screen.blit(self.image, (self.leftHitbox.x, self.leftHitbox.y))
+            if(self.topHitbox.y < screenMiddley):
+                self.topHitbox.y+=5
+                screen.blit(self.image, (self.topHitbox.x, self.topHitbox.y))
         elif(direction=="bottom"):
-            if(self.leftHitbox.y > screenMiddley):
-                self.leftHitbox.y-=5
-                screen.blit(self.image, (self.leftHitbox.x, self.leftHitbox.y))
+            if(self.bottomHitbox.y > screenMiddley):
+                self.bottomHitbox.y-=5
+                screen.blit(self.image, (self.bottomHitbox.x, self.bottomHitbox.y))
                 
 
 def load(asset):
@@ -150,12 +150,11 @@ while running:
     draw_ring("blue")
     
     if(i<len(beatTime) and currentTime >= beatTime[i]*1000):
-        for directionarr in randirection:
-            for direction in directionarr:
-                if direction=="left": activeobjects.append((object.leftHitbox,"left"))
-                elif direction=="right": activeobjects.append((object.rightHitbox,"right"))
-                elif direction=="top": activeobjects.append((object.topHitbox,"top"))
-                elif direction=="bottom": activeobjects.append((object.bottomHitbox,"bottom"))
+        for direction in randirection[i]:
+            if direction=="left": activeobjects.append((object.leftHitbox,"left"))
+            elif direction=="right": activeobjects.append((object.rightHitbox,"right"))
+            elif direction=="top": activeobjects.append((object.topHitbox,"top"))
+            elif direction=="bottom": activeobjects.append((object.bottomHitbox,"bottom"))
         i+=1
 
     for obj in activeobjects:
@@ -170,27 +169,27 @@ while running:
             object.update(direction="bottom")
         
     
-    for event in pygame.event.get():
+        for event in pygame.event.get():
 
-        if event.type == pygame.QUIT:
-            running=False
-        #key presses
-
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_q:
+            if event.type == pygame.QUIT:
                 running=False
+            #key presses
 
-            if event.key == pygame.K_LEFT: timer["left"]=pygame.time.get_ticks()
-            if event.key == pygame.K_RIGHT: timer["right"]=pygame.time.get_ticks()
-            if event.key == pygame.K_UP: timer["top"]=pygame.time.get_ticks()
-            if event.key == pygame.K_DOWN: timer["bottom"]=pygame.time.get_ticks()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    running=False
 
-    for direction in timer:
-        startTime=timer[direction]
-        if startTime > 0 and (currentTime - startTime < actionDuration):
-            draw_ring_hitbox(direction)
-        elif startTime > actionDuration:
-            timer[direction] = 0    
+                if event.key == pygame.K_LEFT: timer["left"]=pygame.time.get_ticks()
+                if event.key == pygame.K_RIGHT: timer["right"]=pygame.time.get_ticks()
+                if event.key == pygame.K_UP: timer["top"]=pygame.time.get_ticks()
+                if event.key == pygame.K_DOWN: timer["bottom"]=pygame.time.get_ticks()
+
+        for direction in timer:
+            startTime=timer[direction]
+            if startTime > 0 and (currentTime - startTime < actionDuration):
+                draw_ring_hitbox(direction)
+            elif startTime > actionDuration:
+                timer[direction] = 0    
 
     pygame.display.update()
     clock.tick(60)
