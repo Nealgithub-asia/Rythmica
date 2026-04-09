@@ -3,11 +3,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def bake_audio():
-    path = "./music/tunetank-vlog-beat-background-349853.mp3"
-    example = librosa.example("nutcracker")
+    path = "./music/slowBeat.mp3"
+    #example = librosa.example("nutcracker")
     y,sr=librosa.load(path)
+    #older------------------------
+    #    beatTrack=librosa.onset.onset_detect(y=y,sr=sr)
+    #Newer------------------------
+    # Separate harmonic (melody) and percussive (drums) components
+    y_harm, y_perc = librosa.effects.hpss(y)
+    S = librosa.feature.melspectrogram(y=y_perc, sr=sr, n_mels=128, fmax=5000)
+    onset_env = librosa.onset.onset_strength(S=librosa.power_to_db(S, ref=np.max), sr=sr)
 
-    beatTrack=librosa.onset.onset_detect(y=y,sr=sr)
+    # Detect beats using ONLY the percussive component
+    beatTrack = librosa.onset.onset_detect(onset_envelope=onset_env, sr=sr, delta=0.26, wait=1)
+    #------------------------------
     beatSamples=librosa.frames_to_samples(beatTrack)
     beatTime=beatSamples/sr
     totalBeats=len(beatTime)

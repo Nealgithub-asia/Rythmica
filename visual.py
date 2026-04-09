@@ -64,20 +64,26 @@ class game_object:
     def update(self, direction):
         if(direction=="left"):
             if(self.leftHitbox.x < screenMiddlex):
-                self.leftHitbox.x+=5
+                self.leftHitbox.x+=speed
                 screen.blit(self.image, (self.leftHitbox.x, self.leftHitbox.y))
         elif(direction=="right"):
             if(self.rightHitbox.x > screenMiddlex):
-                self.rightHitbox.x-=5
+                self.rightHitbox.x-=speed
                 screen.blit(self.image, (self.rightHitbox.x, self.rightHitbox.y))
         elif(direction=="top"):
             if(self.topHitbox.y < screenMiddley):
-                self.topHitbox.y+=5
+                self.topHitbox.y+=speed
                 screen.blit(self.image, (self.topHitbox.x, self.topHitbox.y))
         elif(direction=="bottom"):
             if(self.bottomHitbox.y > screenMiddley):
-                self.bottomHitbox.y-=5
+                self.bottomHitbox.y-=speed
                 screen.blit(self.image, (self.bottomHitbox.x, self.bottomHitbox.y))
+
+    def get_hitbox(self, direction):
+        if direction == "left": return self.leftHitbox
+        if direction == "right": return self.rightHitbox
+        if direction == "top": return self.topHitbox
+        if direction == "bottom": return self.bottomHitbox
                 
 
 def load(asset):
@@ -92,18 +98,39 @@ def draw_ring(color):
 
 def draw_ring_hitbox(side):
     if(side=="left"):
-        pygame.draw.rect(screen, "red", rectLeft, 2)
+        pygame.draw.rect(screen, "red", ring_hitbox("left"), 2)
     elif(side=="right"):
-        pygame.draw.rect(screen, "red", rectRight, 2)
+        pygame.draw.rect(screen, "red", ring_hitbox("right"), 2)
     elif(side=="top"):
-        pygame.draw.rect(screen, "red", rectTop, 2) 
+        pygame.draw.rect(screen, "red", ring_hitbox("top"), 2) 
     elif(side=="bottom"):
-        pygame.draw.rect(screen, "red", rectBottom, 2)
+        pygame.draw.rect(screen, "red", ring_hitbox("bottom"), 2)
 
 def draw_player():
     screen.blit(player.image , ( (screenWidth-player.width)//2, (screenHeight-player.height)//2) )
 
+def ring_hitbox(direction):
+    if(direction=="left"):
+        return pygame.Rect((screenMiddlex - ringRadius),( screenMiddley - ringWidth//2), ringWidth, ringWidth)
+    elif(direction=="right"):
+        return pygame.Rect((screenMiddlex + ringRadius - ringWidth),(screenMiddley - ringWidth//2), ringWidth, ringWidth)
+    elif(direction=="top"):
+        return pygame.Rect((screenMiddlex - ringWidth//2),(screenMiddley-ringRadius), ringWidth, ringWidth)
+    elif(direction=="bottom"):
+        return pygame.Rect((screenMiddlex - ringWidth//2),(screenMiddley + ringRadius - ringWidth), ringWidth, ringWidth)
+
+def is_hitbox_active(direction):
+    startTime = timer[direction]
+    currentTime=pygame.time.get_ticks()
+
+    if (currentTime - startTime) < actionDuration:
+        return True
+    return False
+
 pygame.init()
+pygame.mixer.init()
+pygame.mixer.music.load("./music/slowBeat.mp3")
+
 
 screenWidth, screenHeight=1080,1080
 screenMiddle=[screenWidth//2, screenHeight//2]
@@ -127,21 +154,22 @@ object=game_object(objectImage, 30, 30, 30, 30)
 ringRadius=200
 ringWidth=30 #ring width is the same as rectangle hitbox width
 
-rectLeft= pygame.Rect((screenMiddlex - ringRadius),( screenMiddley - ringWidth//2), ringWidth, ringWidth)
-rectRight= pygame.Rect((screenMiddlex + ringRadius - ringWidth),(screenMiddley - ringWidth//2), ringWidth, ringWidth)
-rectTop= pygame.Rect((screenMiddlex - ringWidth//2),(screenMiddley-ringRadius), ringWidth, ringWidth)
-rectBottom= pygame.Rect((screenMiddlex - ringWidth//2),(screenMiddley + ringRadius - ringWidth), ringWidth, ringWidth)
-
-speed=5
+speed=3
+#for pixels to reach center
+#(width / 2)/(speed x framerate) with speed 3 it takes 3000 ms
+travelTime = (((screenWidth/2) - 200) / (speed * 60)) * 1000
+musicBuffer = 4000 #ms
 
 clock = pygame.time.Clock()
-actionDuration=500 #mili seconds
+actionDuration=200 #mili seconds
 actionInitialize=0 #will get ticks till 1000
 
 timer={"left":0,"right":0,"top":0,"bottom":0}
 #game loop
 activeobjects=[]
 i=0
+
+musicStarted = False
 running=True
 while running:
     currentTime=pygame.time.get_ticks()
@@ -150,8 +178,12 @@ while running:
     draw_player()
     draw_ring("blue")
 
-    
-    if(i<len(beatTime) and currentTime >= beatTime[i]*1000): 
+    if not musicStarted and currentTime >= musicBuffer:
+        pygame.mixer.music.play()
+        musicStarted = True
+
+    spawnTime = (musicBuffer + beatTime[i]*1000) - travelTime
+    if(i<len(beatTime) and currentTime >= spawnTime): 
         for direction in randirection[i]:
             newObj=game_object(objectImage, 30, 30, 30, 30)
             if direction=="left": activeobjects.append((newObj,"left"))
@@ -161,18 +193,22 @@ while running:
         i+=1
     
     for obj in reversed(activeobjects):
+        rect, dir = obj
+        rect.update(direction=dir)
         
-        rect,dir=obj
+        # 1. Miss Logic: Remove if it goes past the center
+        is_past_center = (dir == "left" and rect.leftHitbox.x >= screenMiddlex) or \
+                          (dir == "right" and rect.rightHitbox.x <= screenMiddlex) or \
+                          (dir == "top" and rect.topHitbox.y >= screenMiddley) or \
+                          (dir == "bottom" and rect.bottomHitbox.y <= screenMiddley)
         
-        rect.update(direction=dir)        
+        if is_past_center:
+            activeobjects.remove(obj)
+            continue
 
-        if dir=="left" and rect.leftHitbox.x>=screenMiddlex:
-            activeobjects.remove(obj)
-        elif dir=="right" and rect.rightHitbox.x<=screenMiddlex:
-            activeobjects.remove(obj)
-        elif dir=="top" and rect.topHitbox.y>=screenMiddley:
-            activeobjects.remove(obj)
-        elif dir=="bottom" and rect.bottomHitbox.y<=screenMiddley:
+        # 2. Hit Logic: Remove if it hits an ACTIVE hitbox matching its direction
+        current_hitbox = rect.get_hitbox(dir)
+        if is_hitbox_active(dir) and current_hitbox.colliderect(ring_hitbox(dir)):
             activeobjects.remove(obj)
 
         
@@ -196,10 +232,12 @@ while running:
         startTime=timer[direction]
         if startTime > 0 and (currentTime - startTime < actionDuration):
             draw_ring_hitbox(direction)
-        elif startTime > actionDuration:
-            timer[direction] = 0    
+            
+        elif (currentTime - startTime) > actionDuration:
+            timer[direction] = 0
 
     pygame.display.update()
     clock.tick(60)
 
 pygame.quit()
+ 

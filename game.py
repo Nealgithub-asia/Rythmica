@@ -29,7 +29,8 @@ for i in range(totalBeats):
     elif(np.abs(bY[i])<=RMS):
         num= np.random.randint(1,3)
 
-    randomize=np.random.choice(4,size=(num), replace = False).tolist()                           
+    #size should be num in future
+    randomize=np.random.choice(4,size=1, replace = False).tolist()                           
     randirectionIndex.append(randomize)
 
 randirection = [[direction[idx] for idx in sub_idx]for sub_idx in randirectionIndex]
@@ -43,7 +44,7 @@ for i in range(totalBeats):
 #print([[f"{item[0]:.2f}", item[1]] for item in beatDirection[:5]])
 print(beatTime[:20]," Beat times")
 #print(randirectionIndex[:5])
-#print(randirection[:5])
+print(randirection[:5])
 
 #print(sr)
 
